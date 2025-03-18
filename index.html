@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activar Cámara</title>
+    <title>Activar Cámara Trasera</title>
     <style>
         body, html {
             margin: 0;
@@ -20,28 +20,50 @@
             top: 0;
             left: 0;
         }
+
+        button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #008CBA;
+            color: white;
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Botón para activar la cámara -->
+    <button id="startCamera">Activar Cámara</button>
 
     <!-- Elemento de video para mostrar la cámara en vivo -->
     <video id="videoElement" autoplay></video>
 
     <script>
-        // Verificar si el navegador soporta el acceso a la cámara
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                // Asignar el stream de video al elemento <video>
-                var videoElement = document.getElementById('videoElement');
-                videoElement.srcObject = stream;
-            })
-            .catch(function(error) {
-                console.log('Error al acceder a la cámara: ', error);
-            });
-        } else {
-            alert("Tu navegador no soporta acceso a la cámara.");
-        }
+        // Función para activar la cámara al hacer clic en el botón
+        document.getElementById('startCamera').addEventListener('click', function() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                // Solicitamos la cámara trasera
+                navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: { exact: "environment" } } // "environment" para la cámara trasera
+                })
+                .then(function(stream) {
+                    var videoElement = document.getElementById('videoElement');
+                    videoElement.srcObject = stream;
+                    // Ocultar el botón después de activar la cámara
+                    document.getElementById('startCamera').style.display = 'none';
+                })
+                .catch(function(error) {
+                    console.log('Error al acceder a la cámara: ', error);
+                });
+            } else {
+                alert("Tu navegador no soporta acceso a la cámara.");
+            }
+        });
     </script>
 
 </body>
