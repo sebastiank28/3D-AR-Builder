@@ -1,31 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Camera</title>
+    <title>Cámara Web</title>
 </head>
 <body>
-    <video id="camera" width="100%" height="100%" autoplay></video>
-
+    <h1>Acceso a la cámara</h1>
+    <video id="video" width="100%" autoplay></video>
+    
     <script>
-        const camera = document.getElementById('camera');
-
-        async function startCamera() {
+        // Función para acceder a la cámara
+        async function iniciarCamara() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
+                // Intentamos obtener la cámara trasera (si está disponible)
+                const dispositivos = await navigator.mediaDevices.enumerateDevices();
+                const camaraTrasera = dispositivos.find(d => d.kind === 'videoinput' && d.label.toLowerCase().includes('back'));
+                
+                const constraints = {
                     video: {
-                        facingMode: { ideal: "environment" }
+                        deviceId: camaraTrasera ? { exact: camaraTrasera.deviceId } : undefined,
+                        facingMode: camaraTrasera ? undefined : 'environment', // Si no se encuentra cámara trasera, usa la cámara frontal
                     }
-                });
-                camera.srcObject = stream;
+                };
+                
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                document.getElementById('video').srcObject = stream;
             } catch (err) {
                 console.error("Error al acceder a la cámara: ", err);
-                alert("No se pudo acceder a la cámara. Por favor, verifica los permisos y que tu dispositivo tenga una cámara trasera.");
             }
         }
-
-        startCamera();
+        
+        // Llamar a la función para iniciar la cámara
+        iniciarCamara();
     </script>
 </body>
 </html>
+
