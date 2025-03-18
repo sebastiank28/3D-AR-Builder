@@ -5,60 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D-AR-Builder</title>
     <style>
-        /* Ajustar video a pantalla completa sin franjas */
+        /* Evita márgenes y barras de desplazamiento en la página */
         body {
             margin: 0;
-            overflow: hidden;
+            overflow: hidden; /* Oculta cualquier desbordamiento fuera de la pantalla */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: black;
+            background: black; /* Fondo negro para evitar franjas blancas */
         }
 
+        /* Ajusta el video para que ocupe toda la pantalla */
         video {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%); /* Centra el video exactamente */
             width: 100vw;
             height: 100vh;
-            object-fit: cover;
+            object-fit: cover; /* Ajusta el contenido sin deformarlo ni dejar espacios */
         }
     </style>
 </head>
 <body>
+    <!-- Video donde se mostrará la cámara -->
     <video id="video" autoplay playsinline></video>
 
     <script>
+        // Función para acceder a la cámara del dispositivo
         async function iniciarCamara() {
             try {
+                // Obtiene una lista de todos los dispositivos multimedia (cámaras, micrófonos, etc.)
                 const dispositivos = await navigator.mediaDevices.enumerateDevices();
+
+                // Busca la cámara trasera (normalmente tiene "back" en el nombre)
                 const camaraTrasera = dispositivos.find(d => d.kind === 'videoinput' && d.label.toLowerCase().includes('back'));
 
+                // Configuración de la cámara
                 const constraints = {
                     video: {
-                        deviceId: camaraTrasera ? { exact: camaraTrasera.deviceId } : undefined,
-                        facingMode: camaraTrasera ? undefined : 'environment',
-                        width: { ideal: 1920 },
+                        deviceId: camaraTrasera ? { exact: camaraTrasera.deviceId } : undefined, // Usa la cámara trasera si está disponible
+                        facingMode: camaraTrasera ? undefined : 'environment', // Si no hay trasera, intenta usar la "environment" (trasera por defecto)
+                        width: { ideal: 1920 }, // Intenta usar una resolución Full HD
                         height: { ideal: 1080 }
                     }
                 };
 
+                // Solicita acceso a la cámara con las restricciones definidas
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+                // Obtiene el elemento <video> y le asigna el stream de la cámara
                 const videoElement = document.getElementById('video');
                 videoElement.srcObject = stream;
 
-                // Forzar la actualización del video en iOS
-                videoElement.load();
-                setTimeout(() => videoElement.play(), 1000);
+                // Forzar actualización en iOS (algunos dispositivos no actualizan el video automáticamente)
+                videoElement.load(); // Recarga el video para asegurarse de que se muestra
+                setTimeout(() => videoElement.play(), 1000); // Da un pequeño retraso antes de iniciar la reproducción
 
             } catch (err) {
-                console.error("Error al acceder a la cámara: ", err);
+                console.error("Error al acceder a la cámara: ", err); // Muestra el error en la consola si algo falla
             }
         }
 
+        // Llamar a la función para iniciar la cámara cuando se cargue la página
         iniciarCamara();
     </script>
 </body>
 </html>
+
