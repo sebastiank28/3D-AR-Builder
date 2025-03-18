@@ -1,21 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Model</title>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.9.1/dist/model-viewer.min.js"></script>
+    <title>Mi Primera Página Web</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        section {
+            margin: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
 </head>
 <body>
-    <!-- Aquí se carga el modelo 3D en AR -->
-    <model-viewer 
-        src="modelo.glb"  <!-- Cambia el nombre si es necesario -->
-        alt="3D Model"
-        auto-rotate
-        camera-controls
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        style="width: 100%; height: 100vh;">
-    </model-viewer>
+
+    <header>
+        <h1>Bienvenido a mi página web</h1>
+    </header>
+
+    <section>
+        <p>Esta es una página web básica con HTML, CSS y JavaScript.</p>
+        <p>Haz clic en el botón para ver un mensaje.</p>
+        <button id="miBoton">Haz clic aquí</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Mi Página Web</p>
+    </footer>
+
+    <script>
+        document.getElementById("miBoton").addEventListener("click", function() {
+            alert("¡Hola! Has hecho clic en el botón.");
+        });
+    </script>
+
 </body>
 </html>
