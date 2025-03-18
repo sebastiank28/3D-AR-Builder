@@ -3,72 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D-AR-Builder</title>
+    <title>Cámara Web</title>
     <style>
-        /* Evita márgenes y barras de desplazamiento en la página */
+        /* Estilos generales para pantalla completa */
         body {
             margin: 0;
-            overflow: hidden; /* Oculta cualquier desbordamiento fuera de la pantalla */
+            overflow: hidden; /* Evita barras de desplazamiento */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: black; /* Fondo negro para evitar franjas blancas */
+            background: black; /* Fondo negro */
+            color: white; /* Color del texto del mensaje */
+            font-family: Arial, sans-serif;
+            font-size: 24px;
         }
 
-        /* Ajusta el video para que ocupe toda la pantalla */
+        /* Video ocupa toda la pantalla */
         video {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* Centra el video exactamente */
+            transform: translate(-50%, -50%); /* Centra el video */
             width: 100vw;
             height: 100vh;
-            object-fit: cover; /* Ajusta el contenido sin deformarlo ni dejar espacios */
+            object-fit: cover; /* Ajusta el video sin dejar espacios */
         }
     </style>
 </head>
 <body>
-    <!-- Video donde se mostrará la cámara -->
+    <!-- Elemento de video donde se mostrará la cámara -->
     <video id="video" autoplay playsinline></video>
+    <!-- Mensaje oculto por defecto que se muestra si no hay cámara -->
+    <div id="mensaje" style="display: none;">NO CAM</div> 
 
     <script>
-        // Función para acceder a la cámara del dispositivo
+        // Función para iniciar la cámara
         async function iniciarCamara() {
             try {
-                // Obtiene una lista de todos los dispositivos multimedia (cámaras, micrófonos, etc.)
-                const dispositivos = await navigator.mediaDevices.enumerateDevices();
-
-                // Busca la cámara trasera (normalmente tiene "back" en el nombre)
-                const camaraTrasera = dispositivos.find(d => d.kind === 'videoinput' && d.label.toLowerCase().includes('back'));
-
-                // Configuración de la cámara
+                // Configuración para forzar la cámara trasera
                 const constraints = {
                     video: {
-                        deviceId: camaraTrasera ? { exact: camaraTrasera.deviceId } : undefined, // Usa la cámara trasera si está disponible
-                        facingMode: camaraTrasera ? undefined : 'environment', // Si no hay trasera, intenta usar la "environment" (trasera por defecto)
-                        width: { ideal: 1920 }, // Intenta usar una resolución Full HD
+                        facingMode: 'environment', // Usa la cámara trasera
+                        width: { ideal: 1920 }, // Intenta usar resolución Full HD
                         height: { ideal: 1080 }
                     }
                 };
 
-                // Solicita acceso a la cámara con las restricciones definidas
+                // Intenta acceder a la cámara
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-                // Obtiene el elemento <video> y le asigna el stream de la cámara
+                // Asigna el stream de la cámara al elemento <video>
                 const videoElement = document.getElementById('video');
                 videoElement.srcObject = stream;
 
-                // Forzar actualización en iOS (algunos dispositivos no actualizan el video automáticamente)
-                videoElement.load(); // Recarga el video para asegurarse de que se muestra
-                setTimeout(() => videoElement.play(), 1000); // Da un pequeño retraso antes de iniciar la reproducción
-
+                // Solución para iOS: recargar y forzar reproducción
+                videoElement.load();
+                setTimeout(() => videoElement.play(), 1000);
             } catch (err) {
-                console.error("Error al acceder a la cámara: ", err); // Muestra el error en la consola si algo falla
+                // Si falla el acceso a la cámara, muestra el mensaje "NO CAM"
+                console.error("Error al acceder a la cámara: ", err);
+                document.getElementById('mensaje').style.display = "block"; 
             }
         }
 
-        // Llamar a la función para iniciar la cámara cuando se cargue la página
+        // Llama a la función cuando la página cargue
         iniciarCamara();
     </script>
 </body>
