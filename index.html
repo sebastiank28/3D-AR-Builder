@@ -4,41 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cámara Web</title>
+    <style>
+        /* Asegurar que el video tenga dimensiones */
+        video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* Ajustar el video al tamaño de la pantalla */
+            background: black; /* Evitar pantalla blanca */
+        }
+    </style>
 </head>
 <body>
-    <video id="video" width="100%" autoplay></video>
+    <video id="video" autoplay playsinline></video>
 
     <script>
-        // Función para acceder a la cámara
         async function iniciarCamara() {
             try {
                 const dispositivos = await navigator.mediaDevices.enumerateDevices();
                 const camaraTrasera = dispositivos.find(d => d.kind === 'videoinput' && d.label.toLowerCase().includes('back'));
-                
+
                 const constraints = {
                     video: {
                         deviceId: camaraTrasera ? { exact: camaraTrasera.deviceId } : undefined,
-                        facingMode: camaraTrasera ? undefined : 'environment', // Si no se encuentra cámara trasera, usa la cámara frontal
+                        facingMode: camaraTrasera ? undefined : 'environment',
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
                     }
                 };
-                
+
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 const videoElement = document.getElementById('video');
                 videoElement.srcObject = stream;
 
-                // Forzamos la reproducción y verificamos si está disponible
-                setTimeout(() => {
-                    videoElement.play().catch(err => {
-                        console.error("Error al intentar reproducir el video: ", err);
-                    });
-                }, 1000);  // Espera un segundo antes de intentar reproducir el video
+                // Forzar la actualización del video en iOS
+                videoElement.load();
+                setTimeout(() => videoElement.play(), 1000);
 
             } catch (err) {
                 console.error("Error al acceder a la cámara: ", err);
             }
         }
 
-        // Llamar a la función para iniciar la cámara
         iniciarCamara();
     </script>
 </body>
