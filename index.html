@@ -12,32 +12,17 @@
         const camera = document.getElementById('camera');
 
         function startCamera() {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-                console.log("enumerateDevices() no es compatible.");
-                return;
-            }
-
-            navigator.mediaDevices.enumerateDevices()
-                .then(devices => {
-                    const rearCamera = devices.find(device => device.kind === 'videoinput' && device.label.toLowerCase().includes('back'));
-                    
-                    if (rearCamera) {
-                        navigator.mediaDevices.getUserMedia({
-                            video: { deviceId: rearCamera.deviceId }
-                        })
-                        .then(function(stream) {
-                            camera.srcObject = stream;
-                        })
-                        .catch(function(err) {
-                            console.log("Error al acceder a la cámara trasera: ", err);
-                        });
-                    } else {
-                        console.log("No se encontró la cámara trasera.");
-                    }
-                })
-                .catch(function(err) {
-                    console.log("Error al obtener los dispositivos: ", err);
-                });
+            navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: { exact: "environment" }
+                }
+            })
+            .then(function(stream) {
+                camera.srcObject = stream;
+            })
+            .catch(function(err) {
+                console.log("Error al acceder a la cámara: ", err);
+            });
         }
 
         startCamera();
