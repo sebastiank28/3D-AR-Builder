@@ -5,12 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cámara Web</title>
     <style>
-        /* Asegurar que el video tenga dimensiones */
+        /* Ajustar video a pantalla completa sin franjas */
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: black;
+        }
+
         video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100vw;
             height: 100vh;
-            object-fit: cover; /* Ajustar el video al tamaño de la pantalla */
-            background: black; /* Evitar pantalla blanca */
+            object-fit: cover;
         }
     </style>
 </head>
@@ -49,4 +62,3 @@
     </script>
 </body>
 </html>
-
