@@ -6,14 +6,12 @@
     <title>Cámara Web</title>
 </head>
 <body>
-    <h1>Acceso a la cámara</h1>
     <video id="video" width="100%" autoplay></video>
-    
+
     <script>
         // Función para acceder a la cámara
         async function iniciarCamara() {
             try {
-                // Intentamos obtener la cámara trasera (si está disponible)
                 const dispositivos = await navigator.mediaDevices.enumerateDevices();
                 const camaraTrasera = dispositivos.find(d => d.kind === 'videoinput' && d.label.toLowerCase().includes('back'));
                 
@@ -25,15 +23,22 @@
                 };
                 
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                document.getElementById('video').srcObject = stream;
+                const videoElement = document.getElementById('video');
+                videoElement.srcObject = stream;
+
+                // Retardo para asegurar que el video se muestre en iOS
+                setTimeout(() => {
+                    videoElement.play();  // Asegura que el video se reproduzca
+                }, 1000);  // Espera un segundo antes de reproducir el video (retraso para iOS)
             } catch (err) {
                 console.error("Error al acceder a la cámara: ", err);
             }
         }
-        
+
         // Llamar a la función para iniciar la cámara
         iniciarCamara();
     </script>
 </body>
 </html>
+
 
