@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>AR Camera</title>
 </head>
 <body>
     <video id="camera" width="100%" height="100%" autoplay></video>
@@ -12,6 +12,11 @@
         const camera = document.getElementById('camera');
 
         function startCamera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+                console.log("enumerateDevices() no es compatible.");
+                return;
+            }
+
             navigator.mediaDevices.enumerateDevices()
                 .then(devices => {
                     const rearCamera = devices.find(device => device.kind === 'videoinput' && device.label.toLowerCase().includes('back'));
@@ -39,5 +44,3 @@
     </script>
 </body>
 </html>
-
-
