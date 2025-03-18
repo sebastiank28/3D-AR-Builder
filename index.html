@@ -11,18 +11,18 @@
     <script>
         const camera = document.getElementById('camera');
 
-        function startCamera() {
-            navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: { exact: "environment" }
-                }
-            })
-            .then(function(stream) {
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: { ideal: "environment" }
+                    }
+                });
                 camera.srcObject = stream;
-            })
-            .catch(function(err) {
-                console.log("Error al acceder a la cámara: ", err);
-            });
+            } catch (err) {
+                console.error("Error al acceder a la cámara: ", err);
+                alert("No se pudo acceder a la cámara. Por favor, verifica los permisos y que tu dispositivo tenga una cámara trasera.");
+            }
         }
 
         startCamera();
