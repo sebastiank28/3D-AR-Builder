@@ -26,10 +26,13 @@
                 const videoElement = document.getElementById('video');
                 videoElement.srcObject = stream;
 
-                // Retardo para asegurar que el video se muestre en iOS
+                // Forzamos la reproducción y verificamos si está disponible
                 setTimeout(() => {
-                    videoElement.play();  // Asegura que el video se reproduzca
-                }, 1000);  // Espera un segundo antes de reproducir el video (retraso para iOS)
+                    videoElement.play().catch(err => {
+                        console.error("Error al intentar reproducir el video: ", err);
+                    });
+                }, 1000);  // Espera un segundo antes de intentar reproducir el video
+
             } catch (err) {
                 console.error("Error al acceder a la cámara: ", err);
             }
@@ -40,5 +43,4 @@
     </script>
 </body>
 </html>
-
 
