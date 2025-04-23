@@ -1,49 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D AR Builder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D-AR-Builder</title>
+    <style>
+        /* Estilos generales para pantalla completa */
+        body {
+            margin: 0;
+            overflow: hidden; /* Evita barras de desplazamiento */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: black; /* Fondo negro */
+            color: white; /* Color del texto del mensaje */
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+        }
 
-  <!-- Librerías necesarias -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.126.1/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.126.1/examples/js/loaders/OBJLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
-
-  <style>
-    body { margin: 0; overflow: hidden; }
-  </style>
+        /* Video ocupa toda la pantalla */
+        video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centra el video */
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* Ajusta el video sin dejar espacios */
+        }
+    </style>
 </head>
 <body>
-  <!-- Escena AR -->
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-    
-    <!-- Marcador personalizado usando tu archivo .patt -->
-    <a-marker type="pattern" url="marker.patt">
-      <a-entity id="modelo" position="0 0 0" scale="0.05 0.05 0.05"></a-entity>
-    </a-marker>
+    <!-- Elemento de video donde se mostrará la cámara -->
+    <video id="video" autoplay playsinline></video>
+    <!-- Mensaje oculto por defecto que se muestra si no hay cámara -->
+    <div id="mensaje" style="display: none;">NO CAM</div> 
 
-    <!-- Cámara AR -->
-    <a-entity camera></a-entity>
-  </a-scene>
+    <script>
+        // Función para iniciar la cámara
+        async function iniciarCamara() {
+            try {
+                // Configuración para forzar la cámara trasera
+                const constraints = {
+                    video: {
+                        facingMode: 'environment', // Usa la cámara trasera
+                        width: { ideal: 1920 }, // Intenta usar resolución Full HD
+                        height: { ideal: 1080 }
+                    }
+                };
 
-  <!-- Script para cargar tu modelo .obj -->
-  <script>
-    const loader = new THREE.OBJLoader();
-    loader.load(
-      'model.obj',  // Ahora cargamos tu archivo model.obj
-      function (obj) {
-        const entidad = document.querySelector("#modelo");
-        entidad.setObject3D('mesh', obj);
-      },
-      function (xhr) {
-        console.log((xhr.loaded / xhr.total * 100) + '% cargado');
-      },
-      function (error) {
-        console.error('Error al cargar el modelo:', error);
-      }
-    );
-  </script>
+                // Intenta acceder a la cámara
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+                // Asigna el stream de la cámara al elemento <video>
+                const videoElement = document.getElementById('video');
+                videoElement.srcObject = stream;
+
+                // Solución para iOS: recargar y forzar reproducción
+                videoElement.load();
+                setTimeout(() => videoElement.play(), 1000);
+            } catch (err) {
+                // Si falla el acceso a la cámara, muestra el mensaje "NO CAM"
+                console.error("Error al acceder a la cámara: ", err);
+                document.getElementById('mensaje').style.display = "block"; 
+            }
+        }
+
+        // Llama a la función cuando la página cargue
+        iniciarCamara();
+    </script>
 </body>
 </html>
-
