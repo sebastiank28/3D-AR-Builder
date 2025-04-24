@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Modelo 3D</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000; 
+        }
+        #canvas3d { 
+            display: block; 
+            width: 100vw; 
+            height: 100vh; 
+        }
+        #loading {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-family: Arial;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Cargando modelo 3D...</div>
+    <canvas id="canvas3d"></canvas>
+
+    <!-- Three.js y GLTFLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+
+    <script>
+        // 1. Configuración básica de Three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5; // Posición inicial de la cámara
+
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas3d') });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000); // Fondo negro
+
+        // 2. Luces (¡esenciales para ver el modelo!)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+
+        // 3. Cargar modelo GLB
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+            'modelo.glb', // Asegúrate de que el nombre coincida exactamente
+            (gltf) => {
+                const model = gltf.scene;
+                
+                // Ajustes iniciales del modelo
+                model.scale.set(1, 1, 1); // Escala inicial (ajusta según necesidad)
+                
+                // Centrar el modelo en la escena
+                const bbox = new THREE.Box3().setFromObject(model);
+                const center = bbox.getCenter(new THREE.Vector3());
+                model.position.sub(center);
+                
+                scene.add(model);
+                document.getElementById('loading').textContent = "Modelo cargado!";
+                
+                console.log("✅ Modelo cargado correctamente");
+            },
+            undefined,
+            (error) => {
+                console.error("❌ Error al cargar el modelo:", error);
+                document.getElementById('loading').textContent = "Error al cargar el modelo (ver consola)";
+            }
+        );
+
+        // 4. Animación
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 5. Redimensionar ventana
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
